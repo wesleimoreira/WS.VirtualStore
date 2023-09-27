@@ -18,6 +18,7 @@ namespace WS.VirtualStore.Api.Entities
 
         //EF
         public int CategoriaId { get; set; }
-        public ICollection<CarrinhoItem>? CarrinhoItems { get; set; }
+        public Categoria? Categoria { get; set; }
+        public ICollection<CarrinhoItem> CarrinhoItems { get; set; } = new List<CarrinhoItem>();
     }
 }

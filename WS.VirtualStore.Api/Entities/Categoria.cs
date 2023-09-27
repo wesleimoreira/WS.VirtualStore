@@ -11,6 +11,6 @@ namespace WS.VirtualStore.Api.Entities
         public string CategoriaIcone { get; set; } = string.Empty;
 
         //EF
-        public ICollection<Produto>? Produtos { get; set; }
+        public ICollection<Produto> Produtos { get; set; } = new List<Produto>();
     }
 }

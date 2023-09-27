@@ -11,4 +11,8 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="7.0.11" PrivateAssets="all" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\WS.VirtualStore.Models\WS.VirtualStore.Models.csproj" />
+  </ItemGroup>
+
 </Project>

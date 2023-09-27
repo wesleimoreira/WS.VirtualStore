@@ -9,6 +9,6 @@ namespace WS.VirtualStore.Api.Entities
         public string UsuarioNome { get; set; } = string.Empty;
 
         //EF
-        public Carrinho? Carrinho { get; set; } 
+        public Carrinho? Carrinho { get; set; }
     }
 }
