@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using WS.VirtualStore.Api.Entities;
 using WS.VirtualStore.Api.Mappings;
 using WS.VirtualStore.Api.Repositories;
 using WS.VirtualStore.Models.Dtos;
@@ -24,7 +23,7 @@ namespace WS.VirtualStore.Api.Controllers
             {
                 var produtos = await _produtoRepository.GetItens();
 
-                if (produtos == null) return StatusCode(StatusCodes.Status204NoContent, "Não foi encontrado produtos cadastrados.");        
+                if (produtos == null) return StatusCode(StatusCodes.Status204NoContent, "Não foi encontrado produtos cadastrados.");
 
                 return Ok(produtos.ConverterProdutosParaDto());
             }
