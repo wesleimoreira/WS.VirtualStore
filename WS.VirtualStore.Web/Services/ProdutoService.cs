@@ -14,6 +14,23 @@ namespace WS.VirtualStore.Web.Services
             _logger = logger;
         }
 
+        public async Task<ProdutoDto> GetItem(int produtoId)
+        {
+            try
+            {
+                var produtoDto = await _httpClient.GetFromJsonAsync<ProdutoDto>($"api/produtos/{produtoId}");
+
+                if(produtoDto == null) return new ProdutoDto();
+
+                return produtoDto;
+            }
+            catch (Exception)
+            {
+                _logger.LogError("Erro ao tentar consulmir a api na rota : api/produtos");
+                throw;
+            }
+        }
+
         public async Task<IEnumerable<ProdutoDto>> GetItens()
         {
             try

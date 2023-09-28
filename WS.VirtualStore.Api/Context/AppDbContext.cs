@@ -7,11 +7,11 @@ namespace WS.VirtualStore.Api.Context
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
-        public  DbSet<Carrinho>? Carrinhos { get; set; }
-        public  DbSet<CarrinhoItem>? CarrinhoItems { get; set; }
+        public  DbSet<Carrinho>Carrinhos => Set<Carrinho>();
+        public  DbSet<CarrinhoItem> CarrinhoItems => Set<CarrinhoItem>();
         public  DbSet<Produto> Produtos => Set<Produto>();
-        public  DbSet<Categoria>? Categorias { get; set; }
-        public  DbSet<Usuario>? Usuarios { get; set; }
+        public  DbSet<Categoria> Categorias => Set<Categoria>();
+        public  DbSet<Usuario> Usuarios => Set<Usuario>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

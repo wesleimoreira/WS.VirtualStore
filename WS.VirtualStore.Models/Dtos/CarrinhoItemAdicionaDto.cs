@@ -4,6 +4,6 @@
     {
         public required int CarrinhoId { get; set; }
         public required int ProdutoId { get; set; }
-        public required int Quantidade { get; set; }
+        public required int CarrinhoItemQuantidade { get; set; }
     }
 }
