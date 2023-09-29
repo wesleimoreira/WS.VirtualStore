@@ -2,8 +2,8 @@
 {
     public class CarrinhoItemAtualizaQuantidadeDto
     {
-        public int CarrinhoItemId { get; set; }
-        public int Quantidade { get; set; }
+        public required int CarrinhoItemId { get; set; }
+        public required int Quantidade { get; set; }
     }
 
 }

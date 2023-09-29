@@ -6,8 +6,8 @@ namespace WS.VirtualStore.Web.Pages.Catalogo
 {
     public class ProdutosBase : ComponentBase
     {
-        [Inject]
-        private IProdutoService ProdutoService { get; set; } = default!;      
+        [Inject] private IProdutoService ProdutoService { get; set; } = default!;
+        [Inject] private ICarrinhoCompraService CarrinhoCompraService { get; set; } = default!;
 
         public IEnumerable<ProdutoDto> Produtos { get; set; } = default!;
 
@@ -15,6 +15,12 @@ namespace WS.VirtualStore.Web.Pages.Catalogo
         {           
 
             Produtos = await ProdutoService.GetItens();
+
+            var carrinhoCompraItens = await CarrinhoCompraService.GetItens(UsuarioLogado.UsuarioId);
+
+            if (carrinhoCompraItens != null)
+                CarrinhoCompraService.ResiseEventOnCarrinhoCompraChanged(carrinhoCompraItens.Sum(x => x.CarrinhoItemQuantidade));
+                
         }
     }
 }

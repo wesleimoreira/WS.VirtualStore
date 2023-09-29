@@ -20,7 +20,7 @@ namespace WS.VirtualStore.Web.Services
             {
                 var produtoDto = await _httpClient.GetFromJsonAsync<ProdutoDto>($"api/produtos/{produtoId}");
 
-                if(produtoDto == null) return new ProdutoDto();
+                if (produtoDto == null) return new ProdutoDto();
 
                 return produtoDto;
             }

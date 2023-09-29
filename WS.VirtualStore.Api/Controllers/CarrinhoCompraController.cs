@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using WS.VirtualStore.Api.Entities;
+using WS.VirtualStore.Models.Dtos;
 using WS.VirtualStore.Api.Mappings;
 using WS.VirtualStore.Api.Repositories;
-using WS.VirtualStore.Models.Dtos;
 
 namespace WS.VirtualStore.Api.Controllers
 {
@@ -11,12 +10,14 @@ namespace WS.VirtualStore.Api.Controllers
     public class CarrinhoCompraController : ControllerBase
     {
         private readonly IProdutoRepository _produtoRepository;
+        private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly ILogger<CarrinhoCompraController> _logger;
         private readonly ICarrinhoCompraRepository _carrinhoCompraRepository;
-        public CarrinhoCompraController(ICarrinhoCompraRepository carrinhoCompraRepository, IProdutoRepository produtoRepository, ILogger<CarrinhoCompraController> logger)
+        public CarrinhoCompraController(ICarrinhoCompraRepository carrinhoCompraRepository, IProdutoRepository produtoRepository, ILogger<CarrinhoCompraController> logger, IWebHostEnvironment webHostEnvironment)
         {
             _logger = logger;
             _produtoRepository = produtoRepository;
+            _webHostEnvironment = webHostEnvironment;
             _carrinhoCompraRepository = carrinhoCompraRepository;
         }
 
@@ -32,13 +33,17 @@ namespace WS.VirtualStore.Api.Controllers
 
                 var produtos = await _produtoRepository.GetItens();
 
-                if (produtos == null) return StatusCode(StatusCodes.Status204NoContent, "Não foram encontrados produtos cadastrados.");              
+                if (produtos == null) return StatusCode(StatusCodes.Status204NoContent, "Não foram encontrados produtos cadastrados.");
 
                 return StatusCode(StatusCodes.Status200OK, carrinhoItens.ConverterCarrinhoItensParaDto(produtos));
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 _logger.LogError("## Erro ao tentar acessar o banco de dados.");
+
+                if (_webHostEnvironment.IsDevelopment())
+                    return StatusCode(StatusCodes.Status500InternalServerError, ex.StackTrace);
+
                 return StatusCode(StatusCodes.Status500InternalServerError, "Erro ao tentar acessar o banco de dados.");
             }
         }
@@ -60,9 +65,13 @@ namespace WS.VirtualStore.Api.Controllers
                 return StatusCode(StatusCodes.Status200OK, carrinhoItens.ConverterCarrinhoItemParaDto(produto));
 
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 _logger.LogError("## Erro ao tentar acessar o banco de dados.");
+
+                if (_webHostEnvironment.IsDevelopment())
+                    return StatusCode(StatusCodes.Status500InternalServerError, ex.StackTrace);
+
                 return StatusCode(StatusCodes.Status500InternalServerError, "Erro ao tentar acessar o banco de dados.");
             }
         }
@@ -82,14 +91,70 @@ namespace WS.VirtualStore.Api.Controllers
 
                 var novoCarrinhoItemDto = novoCarrinhoItem.ConverterCarrinhoItemParaDto(produto);
 
-                return CreatedAtAction(nameof(GetItemAsync), new { carrinhoItemId = novoCarrinhoItemDto.CarrinhoItemId}, novoCarrinhoItemDto);
-
+                return StatusCode(StatusCodes.Status201Created, novoCarrinhoItemDto);     
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 _logger.LogError("## Erro ao tentar acessar o banco de dados.");
+
+                if (_webHostEnvironment.IsDevelopment())
+                    return StatusCode(StatusCodes.Status500InternalServerError, ex.StackTrace);
+
                 return StatusCode(StatusCodes.Status500InternalServerError, "Erro ao tentar acessar o banco de dados.");
             }
         }
+
+        [HttpDelete("{carrinhoItemId:int}")]
+        public async Task<ActionResult<CarrinhoItemDto>> DeleteItemAsync(int carrinhoItemId)
+        {
+            try
+            {
+                var carrinhoItem = await _carrinhoCompraRepository.DeletarItem(carrinhoItemId);
+
+                if (carrinhoItem == null) return StatusCode(StatusCodes.Status400BadRequest, "Não foi possivel deletetar o produto do carrinho.");
+
+                var produto = await _produtoRepository.GetItem(carrinhoItem.ProdutoId);
+
+                if (produto == null) return StatusCode(StatusCodes.Status404NotFound, "Erro enesperado o produto não foi encontrado.");
+
+                return StatusCode(StatusCodes.Status200OK, carrinhoItem.ConverterCarrinhoItemParaDto(produto));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("## Erro ao tentar acessar o banco de dados.");
+
+                if (_webHostEnvironment.IsDevelopment())
+                    return StatusCode(StatusCodes.Status500InternalServerError, ex.StackTrace);
+
+                return StatusCode(StatusCodes.Status500InternalServerError, "Erro ao tentar acessar o banco de dados.");
+            }
+        }
+
+        [HttpPatch("{carrinhoItemId:int}")]
+        public async Task<ActionResult<CarrinhoItemDto>> UpdateItemAsync(int carrinhoItemId, CarrinhoItemAtualizaQuantidadeDto carrinhoItemAtualizaQuantidadeDto)
+        {
+            try
+            {
+                var carrinhoItem = await _carrinhoCompraRepository.AtualizarQuantidade(carrinhoItemId, carrinhoItemAtualizaQuantidadeDto);
+
+                if (carrinhoItem == null) return StatusCode(StatusCodes.Status400BadRequest, "Não foi possivel atualizar a quantidade.");
+
+                var produto = await _produtoRepository.GetItem(carrinhoItem.ProdutoId);
+
+                if (produto == null) return StatusCode(StatusCodes.Status404NotFound, "O produto não foi encontrado");
+
+                return StatusCode(StatusCodes.Status200OK, carrinhoItem.ConverterCarrinhoItemParaDto(produto));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("## Erro ao tentar acessar o banco de dados.");
+
+                if (_webHostEnvironment.IsDevelopment())
+                    return StatusCode(StatusCodes.Status500InternalServerError, ex.StackTrace);
+
+                return StatusCode(StatusCodes.Status500InternalServerError, "Erro ao tentar acessar o banco de dados.");
+            }
+        }
+
     }
 }

@@ -1,0 +1,67 @@
+﻿@page "/CarrinhoCompra"
+@inherits CarrinhoComprabase
+
+
+@if(CarrinhoCompraItens is null && MensagemErro is null)
+{
+    <ExibirSpinner></ExibirSpinner>
+}
+else if(MensagemErro is not null)
+{
+    <ExibirErro MensagemErro="@MensagemErro"></ExibirErro>
+}
+else
+{
+    <h3 class="mb-5">Carrinho</h3>
+
+    if(CarrinhoCompraItens?.Count() > 0)
+    {
+        <div class="row mb-5">
+            <div class="col-md-9">
+                @foreach (var item in CarrinhoCompraItens)
+                {
+                    <div class="row mb-3">
+                        <div class="col-md-3">
+                            <img src="@item.ProdutoImagem" width="250" class="img-thumbnail" alt="@item.ProdutoNome" />
+                        </div>
+                        <div class="col-md-9">
+                            <h5>@item.ProdutoNome</h5>
+                            <p class="mb-4">@item.ProdutoDescricao</p>
+
+                            <div class="form-group">
+                                <span>@item.ProdutoPreco.ToString("c") </span>
+
+                                <input type="number" @oninput="(() => AtualizarQuantidade_Input(item.CarrinhoItemId))" @bind="item.CarrinhoItemQuantidade" />
+
+                                <button data-itemId="@item.CarrinhoItemId" class="btn btn-info btn-sm atualizarQuantidade" @onclick="(() => AtualizarCarrinhoItemQuantidade_Click(item.CarrinhoItemId, item.CarrinhoItemQuantidade))">
+                                    <i class="oi oi-plus"></i>
+                                </button>
+
+                                <button class="btn btn-danger btn-sm" @onclick="(() => DeletaCarrinhoItem_Click(item.CarrinhoItemId))">
+                                    <i class="oi oi-trash"></i>
+                                </button>
+                            </div>                                                     
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="col-md-3">
+                <h5>Carrinho - Resumo</h5>
+                <div class="form-group">
+                    <div class="form-label">
+                        Total - (@QuantidadeTotal items)&nbsp; <br />
+                        <b>@PrecoTotal</b>
+                    </div>
+                    <a href="#" class="btn btn-success">
+                        <i class="oi oi-credit-card"></i>
+                        &nbsp; Fechar Pedido
+                    </a>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <h3 class="fw-bolder">Seu Carrinho esta vazio.</h3>
+    }
+}

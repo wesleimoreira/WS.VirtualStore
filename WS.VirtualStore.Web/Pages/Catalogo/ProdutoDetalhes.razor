@@ -23,7 +23,9 @@ else
                 <b>@Produto?.ProdutoPreco.ToString("c")&nbsp;(@Produto?.ProdutoQuantidade items em estoque)</b>
             </p>
             <div>
-                <button class="btn-success">Incluir no carrinho</button>
+                <button class="btn-success" @onclick="(() => AdicionarAoCarrinho_Click(Produto.ProdutoId))">
+                    Incluir no carrinho
+                </button>
             </div>
         </div>
     </div>
