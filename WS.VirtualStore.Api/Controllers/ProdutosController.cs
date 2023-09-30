@@ -33,7 +33,6 @@ namespace WS.VirtualStore.Api.Controllers
             }
         }
 
-
         [HttpGet("{produtoId:int}")]
         public async Task<ActionResult<ProdutoDto>> GetItem(int produtoId)
         {
@@ -61,7 +60,25 @@ namespace WS.VirtualStore.Api.Controllers
 
                 if (produtos == null) return StatusCode(StatusCodes.Status404NotFound, $"O Produto com a categoria: {categoriaId} não foi localizado.");
 
-                return Ok(produtos.ConverterProdutosParaDto());
+                return StatusCode(StatusCodes.Status200OK, produtos.ConverterProdutosParaDto());
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Erro ao tentar acessar o banco de dados.");
+            }
+        }
+
+        [HttpGet]
+        [Route("GetCategorias")]
+        public async Task<ActionResult<IEnumerable<CategoriaDto>>> GetCategorias()
+        {
+            try
+            {
+                var categorias = await _produtoRepository.GetCategorias();
+
+                if (categorias == null) StatusCode(StatusCodes.Status400BadRequest, "Pordutos não encontrado");
+
+                return StatusCode(StatusCodes.Status200OK, categorias?.ConverterCategoriasParaDto());
             }
             catch (Exception)
             {

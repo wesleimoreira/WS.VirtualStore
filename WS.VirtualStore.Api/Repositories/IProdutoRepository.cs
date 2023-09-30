@@ -4,8 +4,9 @@ namespace WS.VirtualStore.Api.Repositories
 {
     public interface IProdutoRepository
     {
-        Task<IEnumerable<Produto>> GetItens();
         Task<Produto> GetItem(int produtoId);
+        Task<IEnumerable<Produto>> GetItens();
+        Task<IEnumerable<Categoria>> GetCategorias();
         Task<IEnumerable<Produto>> GetItensPorCategoria(int categoriaId);
     }
 }

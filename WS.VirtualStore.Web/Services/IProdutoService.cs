@@ -6,5 +6,8 @@ namespace WS.VirtualStore.Web.Services
     {
         Task<ProdutoDto> GetItem(int produtoId);
         Task<IEnumerable<ProdutoDto>> GetItens();
+
+        Task<IEnumerable<CategoriaDto>> GetCategorias();
+        Task<IEnumerable<ProdutoDto>> GetItensPorCategoria(int categoriaId);
     }
 }

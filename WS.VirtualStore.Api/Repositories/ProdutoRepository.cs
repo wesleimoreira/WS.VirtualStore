@@ -11,7 +11,7 @@ namespace WS.VirtualStore.Api.Repositories
         public ProdutoRepository(AppDbContext appDbContext)
         {
             _appDbContext = appDbContext;
-        }
+        }      
 
         public async Task<Produto> GetItem(int produtoId)
         {
@@ -26,6 +26,11 @@ namespace WS.VirtualStore.Api.Repositories
         public async Task<IEnumerable<Produto>> GetItensPorCategoria(int categoriaId)
         {
             return await _appDbContext.Produtos.Include(pro => pro.Categoria).Where(pro => pro.CategoriaId == categoriaId).ToListAsync();
+        }
+
+        public async Task<IEnumerable<Categoria>> GetCategorias()
+        {
+            return await _appDbContext.Categorias.ToListAsync();
         }
     }
 }

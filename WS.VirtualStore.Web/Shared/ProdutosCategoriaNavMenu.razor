@@ -1,0 +1,42 @@
+﻿@inject IProdutoService produtoService
+
+@if (categoriaDtos is null && MensagemErro is null)
+{
+    <ExibirSpinner></ExibirSpinner>
+}
+else if (MensagemErro is not null)
+{
+    <ExibirErro MensagemErro="@MensagemErro"></ExibirErro>
+}
+else
+{
+    foreach (var categoria in categoriaDtos)
+    {
+        var link = $"/ProdutosPorCategoria/{categoria.CategoriaId}";
+
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="@link">
+                <span class="@categoria.CategoriaIcone"></span>&nbsp;@categoria.CategoriaNome
+            </NavLink>
+        </div>
+    }
+}
+
+
+@code {
+    public IEnumerable<CategoriaDto>? categoriaDtos { get; set; }
+
+    public string?  MensagemErro { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            categoriaDtos = await produtoService.GetCategorias();
+        }
+        catch (Exception ex)
+        {
+            MensagemErro = ex.Message;
+        }
+    }
+}
