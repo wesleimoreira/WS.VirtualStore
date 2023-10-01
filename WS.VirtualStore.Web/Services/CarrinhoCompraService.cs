@@ -1,7 +1,5 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
-using System.Text;
-using System.Text.Json;
 using WS.VirtualStore.Models.Dtos;
 
 namespace WS.VirtualStore.Web.Services
@@ -27,7 +25,7 @@ namespace WS.VirtualStore.Web.Services
 
                 if (carrinhoItemDto == null) return default!;
 
-                return carrinhoItemDto;               
+                return carrinhoItemDto;
             }
             catch (Exception)
             {
@@ -42,7 +40,7 @@ namespace WS.VirtualStore.Web.Services
             {
                 var carrinhoItem = await _httpClient.DeleteFromJsonAsync<CarrinhoItemDto>($"api/CarrinhoCompra/{carrinhoItemId}");
 
-                if (carrinhoItem == null) return default!;               
+                if (carrinhoItem == null) return default!;
 
                 return carrinhoItem;
             }
@@ -50,9 +48,9 @@ namespace WS.VirtualStore.Web.Services
             {
                 _logger.LogError("Erro ao tentar consulmir a api na rota : api/produtos");
                 throw;
-            }            
+            }
         }
-       
+
         public async Task<CarrinhoItemDto> AdicionarItem(CarrinhoItemAdicionaDto carrinhoItemAdicionaDto)
         {
             try
@@ -72,19 +70,19 @@ namespace WS.VirtualStore.Web.Services
                 _logger.LogError("Erro ao tentar consulmir a api na rota : api/produtos");
                 throw;
             }
-        }        
+        }
 
         public async Task<CarrinhoItemDto> AtualizarQuantidade(CarrinhoItemAtualizaQuantidadeDto carrinhoItemAtualizaQuantidadeDto)
         {
             try
-            {  
+            {
                 var response = await _httpClient.PatchAsJsonAsync($"api/CarrinhoCompra/{carrinhoItemAtualizaQuantidadeDto.CarrinhoItemId}", carrinhoItemAtualizaQuantidadeDto);
 
-                if(response.StatusCode != HttpStatusCode.OK) return default!;
+                if (response.StatusCode != HttpStatusCode.OK) return default!;
 
                 var carrinhoItem = await response.Content.ReadFromJsonAsync<CarrinhoItemDto>();
 
-                if(carrinhoItem == null) return default!;
+                if (carrinhoItem == null) return default!;
 
                 return carrinhoItem;
             }
@@ -98,6 +96,6 @@ namespace WS.VirtualStore.Web.Services
         public void ResiseEventOnCarrinhoCompraChanged(int totalQuantidade)
         {
             OnCarrinhoCompraChanged?.Invoke(totalQuantidade);
-        }       
+        }
     }
 }

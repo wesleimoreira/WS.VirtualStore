@@ -10,21 +10,22 @@ else if (MensagemErro is not null)
 }
 else
 {
-    foreach (var categoria in categoriaDtos)
-    {
-        var link = $"/ProdutosPorCategoria/{categoria.CategoriaId}";
+    if (categoriaDtos is not null)
+        foreach (var categoria in categoriaDtos)
+        {
+            var link = $"/ProdutosPorCategoria/{categoria.CategoriaId}";
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="@link">
-                <span class="@categoria.CategoriaIcone"></span>&nbsp;@categoria.CategoriaNome
-            </NavLink>
-        </div>
-    }
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="@link">
+                    <span class="@categoria.CategoriaIcone"></span>&nbsp;@categoria.CategoriaNome
+                </NavLink>
+            </div>
+        }
 }
 
 
 @code {
-    public IEnumerable<CategoriaDto>? categoriaDtos { get; set; }
+    public required IEnumerable<CategoriaDto> categoriaDtos { get; set; } 
 
     public string?  MensagemErro { get; set; }
 
@@ -32,7 +33,7 @@ else
     {
         try
         {
-            categoriaDtos = await produtoService.GetCategorias();
+            categoriaDtos = await produtoService.GetCategorias(); 
         }
         catch (Exception ex)
         {

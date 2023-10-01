@@ -1,7 +1,7 @@
-﻿using Microsoft.JSInterop;
+﻿using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 using WS.VirtualStore.Models.Dtos;
 using WS.VirtualStore.Web.Services;
-using Microsoft.AspNetCore.Components;
 
 namespace WS.VirtualStore.Web.Pages.Catalogo
 {
@@ -9,9 +9,11 @@ namespace WS.VirtualStore.Web.Pages.Catalogo
     {
         [Inject] public required IJSRuntime JSRuntime { get; set; }
         [Inject] public required ICarrinhoCompraService CarrinhoCompraService { get; set; }
- 
+        [Inject] public required IGerenciaCarrinhoItensLocalStorageService GerenciaCarrinhoItensLocalStorageService { get; set; }
+
+
         protected int QuantidadeTotal { get; set; }
-        protected string PrecoTotal {  get; set; } = default!;
+        protected string PrecoTotal { get; set; } = default!;
         protected string MensagemErro { get; set; } = default!;
         protected List<CarrinhoItemDto> CarrinhoCompraItens { get; set; } = default!;
 
@@ -20,7 +22,7 @@ namespace WS.VirtualStore.Web.Pages.Catalogo
         {
             try
             {
-                CarrinhoCompraItens = await CarrinhoCompraService.GetItens(UsuarioLogado.UsuarioId);
+                CarrinhoCompraItens = await GerenciaCarrinhoItensLocalStorageService.GetCollection();               
 
                 CalcularResultadoCarrinhoTotal();
             }
@@ -35,23 +37,23 @@ namespace WS.VirtualStore.Web.Pages.Catalogo
             // exclui do banco de dados
             var carrinhoCompraItem = await CarrinhoCompraService.DeletaItem(carrinhoItemId);
             // exclui da memoria 
-            if (carrinhoCompraItem != null)           
+            if (carrinhoCompraItem != null)
                 CarrinhoCompraItens.Remove(CarrinhoCompraItens.First(c => c.CarrinhoItemId == carrinhoItemId));
 
 
-            CalcularResultadoCarrinhoTotal();
+            await GerenciaCarrinhoItensLocalStorageService.SaveCollection(CarrinhoCompraItens);
         }
 
         protected async Task AtualizarQuantidade_Input(int carrinhoItemId)
         {
-            await JSRuntime.InvokeVoidAsync("TornarBotaoAtualizarQuantidadeVisivel", carrinhoItemId, true);            
+            await JSRuntime.InvokeVoidAsync("TornarBotaoAtualizarQuantidadeVisivel", carrinhoItemId, true);
         }
 
         protected async Task AtualizarCarrinhoItemQuantidade_Click(int carrinhoItemId, int carrinhoItemQuantidade)
         {
             try
             {
-                if(carrinhoItemQuantidade > 0)
+                if (carrinhoItemQuantidade > 0)
                 {
                     var atualizarItemDto = new CarrinhoItemAtualizaQuantidadeDto
                     {
@@ -68,8 +70,8 @@ namespace WS.VirtualStore.Web.Pages.Catalogo
                 else
                 {
                     var carrinhoItem = CarrinhoCompraItens.Find(x => x.CarrinhoItemId == carrinhoItemId);
-                    
-                    if(carrinhoItem is not null)
+
+                    if (carrinhoItem != null)
                     {
                         carrinhoItem.CarrinhoItemQuantidade = 1;
                         carrinhoItem.PrecoTotal = carrinhoItem.ProdutoPreco;
@@ -79,7 +81,7 @@ namespace WS.VirtualStore.Web.Pages.Catalogo
             catch (Exception ex)
             {
                 MensagemErro = ex.Message;
-            }           
+            }
         }
 
 

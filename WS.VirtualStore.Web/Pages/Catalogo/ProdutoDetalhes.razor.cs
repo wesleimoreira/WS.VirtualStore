@@ -9,18 +9,26 @@ namespace WS.VirtualStore.Web.Pages.Catalogo
         [Inject] public required IProdutoService ProdutoService { get; set; }
         [Inject] public required NavigationManager NavigationManager { get; set; }
         [Inject] public required ICarrinhoCompraService CarrinhoCompraService { get; set; }
+        [Inject] public required IGerenciaProdutosLocalStorageService GerenciaProdutosLocalStorageService { get; set; }
+        [Inject] public required IGerenciaCarrinhoItensLocalStorageService GerenciaCarrinhoItensLocalStorageService { get; set; }
 
         [Parameter] public required int ProdutoId { get; set; }
 
         public required ProdutoDto Produto { get; set; }
-
         protected string MensagemErro { get; set; } = default!;
+        protected List<CarrinhoItemDto> CarrinhoCompraItens { get; set; } = default!;
 
         protected override async Task OnInitializedAsync()
         {
             try
             {
-                Produto = await ProdutoService.GetItem(ProdutoId);
+                CarrinhoCompraItens = await GerenciaCarrinhoItensLocalStorageService.GetCollection();         
+
+                var produtosDto = await GerenciaProdutosLocalStorageService.GetCollection();
+
+                if (produtosDto != null)
+                    Produto = produtosDto.First(p => p.ProdutoId == ProdutoId);              
+
             }
             catch (Exception ex)
             {
